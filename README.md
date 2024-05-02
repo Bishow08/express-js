@@ -23,3 +23,16 @@
     }
 
     9. npm run dev
+
+    10. npm i --save dotenv
+
+    11. in index.js, require("dotenv").config()
+
+    12. create .env file
+
+    13. Add PORT = 8000 in .env file
+
+    14. In index.js, replace
+        const PORT = 8000 => const PORT= Number(process.env.PORT)
+
+    15. Add .env file in gitignore file
