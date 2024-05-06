@@ -29,25 +29,39 @@ const router = express.Router();
 //     res.json({ msg: "DELETE World! by Bishal"})
 // });
 
-router.post("/register", (req, res) => {
-    const {email, password}= req.body;
+//register scenario
+router.post("/register", (req, res, next) => {
+	try{const { email, password } = req.body;
 
-	res.json({ msg: "User Registered" });
+	if (email !== "bishal@gmail.com" || password !== "bishal") {
+		res.json({ msg: "Invalid User" });
+	} else {
+		res.json({ msg: "User Registered successfully" });
+	}
+}catch(e){
+    next(e);
+}
+
+	res.json({ msg: "User Registered" }); //This line is not executed because after executed if else block the function terminated
 });
 
-//login scenarios
+//login scenario
 
 router.post("/login", (req, res, next) => {
     try{
-        const { email, password}= req.body;
-        //logic
-        if(email !== "bishal@gmail.com" || password !== "bishal"){
-            throw console.error();
+        const {email, password} = req.body;
+    
+	//logic
+    // exception handling in the logic
 
-        }
-
+    if(email !== "bishal@gmail.com" || password !== "bishal"){
+        throw new Error("Invalid Credentials");
+    }else {
+    res.json({ msg: "User Loggedin" });
     }
-	res.json({ msg: "User Loggedin" });
+}catch(error){ //middleware is used for handling error and must have 4 arguments (err, req, res,next)
+next(error);
+}
 });
 
 module.exports = router;
