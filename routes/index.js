@@ -2,6 +2,11 @@ const express = require("express");
 
 const router = express.Router();
 
+const orderRouter = require("../modules/orders/order.api.");
+const movieRouter = require("../modules/movies/movie.api");
+
+
+
 // router.get("/", (req, res)=>{
 
 //     res.json({ msg: "Hello  World! by Bishal"})
@@ -28,6 +33,9 @@ const router = express.Router();
 // router.delete("/", (req, res)=>{
 //     res.json({ msg: "DELETE World! by Bishal"})
 // });
+router.use("api/v1/orders",orderRouter);
+
+router.use("api/v1/movies", movieRouter);
 
 //register scenario
 router.post("/register", (req, res, next) => {
