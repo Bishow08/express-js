@@ -2,40 +2,30 @@ const express = require("express");
 
 const router = express.Router();
 
-const orderRouter = require("../modules/orders/order.api.");
 const movieRouter = require("../modules/movies/movie.api");
+const orderRouter = require("../modules/orders/order.api");
+const userRouter = require("../modules/users/user.api");
+
+
+// How to connect modules from routes index.js
+
+router.get("/api/v1", (req, res, next)=>{
+    try{
+        res.json({msg: "MovieMate API is working"});
+    }catch(e){
+        next(e);
+    }
+});
+
+router.use("/api/v1/movies", movieRouter);
+router.use("/api/v1/orders", orderRouter);
+router.use("/api/v1/users", userRouter);
 
 
 
-// router.get("/", (req, res)=>{
 
-//     res.json({ msg: "Hello  World! by Bishal"})
-// });
 
-// router.post("/post/:id", (req, res)=>{
-//     //client send the data
-//     res.json({ msg: "POST  World! by Bishal"})
-// console.log({query:req.query,params: req.params, body:req.body});
 
-// });
-
-// router.put("/:id", (req, res)=>{
-//     //client send the data
-//     console.log({query:req.query,params: req.params, body:req.body});
-//     res.json({ msg: "PUT  World! by Bishal"})
-// });
-
-// router.patch("/:id", (req, res)=>{
-//     //client send the data
-//     res.json({ msg: "PATCH  World! by Bishal"})
-// });
-
-// router.delete("/", (req, res)=>{
-//     res.json({ msg: "DELETE World! by Bishal"})
-// });
-router.use("api/v1/orders",orderRouter);
-
-router.use("api/v1/movies", movieRouter);
 
 //register scenario
 router.post("/register", (req, res, next) => {

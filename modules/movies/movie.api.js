@@ -1,66 +1,77 @@
-const express = require("express");
-const router = express.Router();
+const router = require("express").Router();
 
-router.post("/",(req,res,next)=>{
+/* All movies API
+List
+Create
+Read only one Movie
+Update
+Delete
+Update the seats for one movie
+Change the release date of 1 movie
+*/
+
+router.get("/", (req,res,next) => {
     try{
-        res.json({msg:"movie created"});
+        res.json({msg:"All movies list"});
     }catch(e){
         next(e);
     }
-})
+});
 
-router.get("/:id",(req,res,next)=>{
+router.post("/create",(req,res,next) => {
     try{
-        res.json({msg:"one movie read"});
+        res.json({msg:"Movie created successfully"});
     }catch(e){
         next(e);
     }
-})
+});
 
-router.put("/;id",(req,res,next)=>{
+router.get("/:id",(req,res,next) => {
     try{
-        res.json({msg:"movie updated"});
+        const {id}= req.params;
+        res.json({msg:`one movie read of id ${id}`});
     }catch(e){
         next(e);
     }
-})
+});
 
-router.delete("/:id",(req,res,next)=>{
+router.put("/:id",(req,res,next) => {
     try{
-        res.json({msg:"movie deleted"});
+        res.json({msg:`movie updated of id ${id}`});
     }catch(e){
         next(e);
     }
-})
+});
 
-router.get("/",(req,res,next)=>{
+router.delete("/:id",(req,res,next) => {
     try{
-        res.json({msg:"movie listed successfully"});
+        const {id}= req.params;
+        res.json({msg:`movie deleted of id ${id}`});
     }catch(e){
         next(e);
     }
-})
+});
 
-router.patch("/:id/seats",(req,res,next)=>{
+
+router.patch("/:id/seats",(req,res,next) => {
     try{
         const {id} = req.params;
-        res.json({msg:`"seat updated of one movie id ${id}"`});
+        res.json({msg:`seat updated of one movie id ${id}`});
     }catch(e){
         next(e);
     }
-})
+});
 
-router.patch("/:id/release-date",(req,res,next)=>{
+router.patch("/:id/release-date",(req,res,next) =>{
     try{
-        res.json({msg:"changed releae date"});
+        const {id}= req.params;
+        res.json({msg:`changed releae date movie of id ${id}`});
     }catch(e){
         next(e);
     }
-})
+});
 
 
 
-/*
 
-*/
 module.exports = router;
