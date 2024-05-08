@@ -59,8 +59,8 @@ router.patch("/:id/change-password",(req,res,next) => {
 
 router.post("/:id/verify-token/:token",(req,res,next) => {
     try{
-        const {id} = req.params;
-        res.json({msg: `Token is verified of id ${id}`});
+        const {id,token} = req.params;
+        res.json({msg: `Token is verified of id ${id} and token ${token}`});
     }catch(e){
         next(e);
     }
