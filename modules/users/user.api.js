@@ -1,5 +1,9 @@
 const router = require("express").Router();
 
+const {generateToken} = require("../../utils/token");
+
+
+
 /*
 Register
 Login
@@ -16,19 +20,36 @@ get one user
 */
 router.post("/register",(req,res,next) => {
     try{
+        const { email } = req.body;
+        // call the nodemailer
         res.json({msg: "User registerd successfully"});
     }catch(e){
         next(e);
     }
 });
 
-router.post("/login",(req,res,next) => {
+
+
+router.post("/login", (req,res,next) => {
     try{
-        res.json({msg: "User loggedin successfully"});
+        const {email, password} = req.body;
+        
+        if (email === "bishal@gmail.com" && password === "bishal"){
+            //generate the jwt token
+            const payload ={
+             email,
+             role: ["admin"],
+            }
+             const token = generateToken(payload);
+             res.json({msg: "user logged in successfully", data:token});
+        }else{
+        res.json({msg: "email or passwerd invalid", data:{}});
+        }
+        
     }catch(e){
         next(e);
     }
-});
+})
 
 router.post("/:id/forget-password",(req,res,next) => {
     try{
