@@ -26,6 +26,7 @@ const secure = (sysRole) => {
   return (req,res,next) => {
     try{
       const {token} = req.headers;
+      console.log(token);
 
     //what to do if no token
     if(!token) throw new Error("Token is missing");

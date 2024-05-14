@@ -1,5 +1,6 @@
 require("dotenv").config();
 const express = require("express");
+const morgan = require("morgan");
 
 const indexRouter = require("./routes");
 
@@ -7,15 +8,16 @@ const app = express();
 const PORT = Number(process.env.PORT);
 
 app.use(express.json()); // I can parse request body as json
-
+app.use(morgan("dev"));
+app.use(express.static("public"));
 
 // middleware (application level custom mw)
-app.use((req, res, next)=>{
-	req.body.country = "NP",
-	req.body.currency = "NPR",
-	req.body.currentTime = new Date().toISOString();
-	next();
-});
+// app.use((req, res, next)=>{
+// 	req.body.country = "NP",
+// 	req.body.currency = "NPR",
+// 	req.body.currentTime = new Date().toISOString();
+// 	next();
+// });
 
 
 app.use("/", indexRouter); // I am the routing mechanism, I will send the API request from / to indexRouter

@@ -7,6 +7,34 @@ const {secure}= require("../../utils/secure");
 const {sendMail} = require("../../services/mailer");
 const event = require("events");
 
+const { validator } = require("./user.validator");
+
+const multer = require("multer");
+
+const storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+      cb(null, "public/upload");
+    },
+    filename: function (req, file, cb) {
+      cb(
+        null,
+        file.fieldname.concat(
+            "-",
+            Date.now(),
+            ".",
+            file.originalname.split(".")[1]
+        )
+      );
+    }
+  });
+  
+const upload = multer({
+    storage: storage,
+    limits: {
+        fileSize: 0.01 * 1024 * 1024 // 10MB file size limit
+    }
+});
+
 const eventEmitter = new event.EventEmitter();
 
 
@@ -25,11 +53,10 @@ update user
 update my profile
 get one user
 */
-router.post("/register", (req,res,next) => {
+router.post("/register", upload.single("profile"), validator, (req,res,next) => {
     try{
         const { email } = req.body;
-        
-        if(!email) throw new Error("Email is missing");
+        console.log(req.file);
         //call the nodemailer
         eventEmitter.addListener("signup", (email) => 
             sendMail({
