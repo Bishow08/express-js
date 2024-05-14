@@ -2,6 +2,13 @@ const router = require("express").Router();
 
 const {generateToken} = require("../../utils/token");
 
+const {secure}= require("../../utils/secure");
+
+const {sendMail} = require("../../services/mailer");
+const event = require("events");
+
+const eventEmitter = new event.EventEmitter();
+
 
 
 /*
@@ -18,11 +25,22 @@ update user
 update my profile
 get one user
 */
-router.post("/register",(req,res,next) => {
+router.post("/register", (req,res,next) => {
     try{
         const { email } = req.body;
-        // call the nodemailer
-        res.json({msg: "User registerd successfully"});
+        
+        if(!email) throw new Error("Email is missing");
+        //call the nodemailer
+        eventEmitter.addListener("signup", (email) => 
+            sendMail({
+                email, 
+                subject: "MovieMate Signup", 
+                htmlMsg: "<b> Thank you for joining MovieMate </b>"
+        
+               })
+            );
+            eventEmitter.emit("signup", email);
+        res.json({msg: "User registerd successfully" });
     }catch(e){
         next(e);
     }
@@ -38,7 +56,7 @@ router.post("/login", (req,res,next) => {
             //generate the jwt token
             const payload ={
              email,
-             role: ["admin"],
+             roles:["user", "admin"],
             }
              const token = generateToken(payload);
              res.json({msg: "user logged in successfully", data:token});
@@ -105,7 +123,7 @@ router.delete("/:id",(req,res,next) => {
     }
 });
 
-router.get("/",(req,res,next) => {
+router.get("/", secure(["admin"]), (req,res,next) => {
     try{
         res.json({msg: "list all users"});
     }catch(e){
