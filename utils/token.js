@@ -1,4 +1,4 @@
-
+const Crypto = require("crypto");
 const JWT = require("jsonwebtoken");
 
 const generateToken = (payload) =>
@@ -10,8 +10,15 @@ const generateToken = (payload) =>
 		{ expiresIn: process.env.JWT_DURATION }
 	);
 
-const verifyToken = (token) =>
-	JWT.verify(token, process.env.JWT_SECRET);
+const verifyToken = (token) => JWT.verify(token, process.env.JWT_SECRET);
 
+const checkRole = ({ sysRole, userRole }) => {
+	userRole.some((role) => sysRole.includes(role));
+};
 
-module.exports = { generateToken, verifyToken };
+const generateOtp = () => {
+
+	return Crypto.randomInt(100000, 999999);
+} // generate truely random 
+
+module.exports = {checkRole, generateOtp, generateToken, verifyToken };

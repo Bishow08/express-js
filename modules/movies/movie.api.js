@@ -1,3 +1,6 @@
+const { getMovies } = require("./movie.controller");
+
+
 const router = require("express").Router();
 
 /* All movies API
@@ -18,7 +21,7 @@ router.get("/", (req,res,next) => {
     }
 });
 
-router.post("/create",(req,res,next) => {
+router.post("/create", getMovies , (req,res,next) => {
     try{
         res.json({msg:"Movie created successfully"});
     }catch(e){

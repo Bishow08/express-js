@@ -1,0 +1,104 @@
+const event = require("events");
+
+const userModel = require("./user.model");
+const { genHash, compareHash} = require("../../utils/hash");
+const { generateToken } = require("../../utils/token");
+const { generateOtp } = require("../../utils/token")
+
+
+const {sendMail} = require("../../services/mailer");
+
+const eventEmitter = new event.EventEmitter();
+eventEmitter.addListener("signup", (email) => 
+            sendMail({
+                email, 
+                subject: "MovieMate Signup", 
+                htmlMsg: "<b> Thank you for joining MovieMate </b>"
+        
+               })
+            );
+
+            eventEmitter.addListener("emailVerification", (email) => 
+                sendMail({
+                    email, 
+                    subject: "MovieMate Email Verification", 
+                    htmlMsg: `<b>${otp}</b> is your otp token`
+            
+                   })
+                );
+
+
+const create = async(payload) =>{
+    const { email, password } = payload;
+    payload.password = genHash(password);
+    const result = await userModel.create(payload);
+
+    //call the nodemailer
+    eventEmitter.emit("signup", email);
+    return result;
+};
+
+const login = async (payload)=>{
+    const { email, password } = payload;
+    // check for email
+    const user = await userModel.findOne({ email, isActive: true });
+    
+    if(!user) throw new Error("User not found");
+    const isVerified = user?.isEmailVerified;
+    
+    if(!isVerified) throw new Error("Email Verification required"); 
+    const isValidPw = compareHash(user?.password, password);
+    if(!isValidPw) throw new Error("Email or password invalid");
+    const tokenPayload = {
+        name: user?.name,
+        roles: user?.roles,
+    };
+
+    const token = generateToken(tokenPayload);
+    if(!token) throw new Error("Something went wrong");
+    return token;
+
+};
+
+const generateEmailToken = async(payload) => {
+    const { email } = payload;
+    const user = userModel.findOne({ email, isActive: true});
+    if(!user) throw new Error("User not found");
+    const isVerified = user?.isEmailVerified;
+    if(!isVerified){
+        const otp = generateOtp();
+        const updateUser = await userModel.updateOne({_id: user?._id }, {otp:  otp});
+
+        if(!updateUser) throw new Error("Something went wrong")
+            console.log({otp});
+            eventEmitter.emit("emailVerification", email, otp);
+
+    }
+    return true;
+
+}
+
+const verifyEmail = ()=>{
+
+};
+
+const getById = (id) => {
+    return userModel.findOne({_id: id});
+};
+
+const list = () => {
+    return userModel.find();
+};
+
+const updateById = (id, payload) => {
+    return userModel.updateOne({_id: id}, {payload})
+};
+
+const removeById = (id) => {
+    return userModel.deleteOne({_id : id})
+};
+
+module.exports = { login, verifyEmail, create, generateEmailToken, getById, list, updateById, removeById };
+
+
+

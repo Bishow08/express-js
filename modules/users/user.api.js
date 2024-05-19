@@ -1,11 +1,8 @@
 const router = require("express").Router();
 
-const {generateToken} = require("../../utils/token");
-
 const {secure}= require("../../utils/secure");
 
-const {sendMail} = require("../../services/mailer");
-const event = require("events");
+const userController = require("./user.controller");
 
 const { validator } = require("./user.validator");
 
@@ -31,11 +28,10 @@ const storage = multer.diskStorage({
 const upload = multer({
     storage: storage,
     limits: {
-        fileSize: 0.01 * 1024 * 1024 // 10MB file size limit
+        fileSize: 10 * 1024 * 1024 // 10MB file size limit
     }
 });
 
-const eventEmitter = new event.EventEmitter();
 
 
 
@@ -53,48 +49,50 @@ update user
 update my profile
 get one user
 */
-router.post("/register", upload.single("profile"), validator, (req,res,next) => {
+router.post("/register", upload.single("profile"), //req.body, req.file, req.files 
+validator, 
+async(req,res,next) => {
     try{
-        const { email } = req.body;
-        console.log(req.file);
+        if (req.file){
+            req.body.profile = req.file.path;
+        }
+
+        const result = await userController.create(req.body);
         //call the nodemailer
-        eventEmitter.addListener("signup", (email) => 
-            sendMail({
-                email, 
-                subject: "MovieMate Signup", 
-                htmlMsg: "<b> Thank you for joining MovieMate </b>"
         
-               })
-            );
-            eventEmitter.emit("signup", email);
-        res.json({msg: "User registerd successfully" });
+            
+        res.json({msg: "User registerd successfully" , data: result});
     }catch(e){
         next(e);
     }
 });
 
 
-
-router.post("/login", (req,res,next) => {
+router.post("/login", async(req,res,next) => {
     try{
-        const {email, password} = req.body;
         
-        if (email === "bishal@gmail.com" && password === "bishal"){
-            //generate the jwt token
-            const payload ={
-             email,
-             roles:["user", "admin"],
-            }
-             const token = generateToken(payload);
-             res.json({msg: "user logged in successfully", data:token});
-        }else{
-        res.json({msg: "email or passwerd invalid", data:{}});
-        }
+        const result = await userController.login(req.body)
+        res.json({msg: "User login successfully" });
         
     }catch(e){
         next(e);
     }
 })
+
+
+
+
+router.post("/generate-email-token", async(req,res,next) => {
+    try{
+        
+        const result = await userController.generateEmailToken(req.body);
+        res.json({msg: "Generated user token" , data: result});
+         
+    }catch(e){
+        next(e);
+    }
+});
+
 
 router.post("/:id/forget-password",(req,res,next) => {
     try{

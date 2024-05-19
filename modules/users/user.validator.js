@@ -2,7 +2,7 @@ const Joi = require("joi");
 
 //schema
 const userSchema = Joi.object({
-   username: Joi.string()
+   name: Joi.string()
         .alphanum()
         .min(3)
         .max(30)
@@ -10,6 +10,11 @@ const userSchema = Joi.object({
    email: Joi.string()
    .email({ minDomainSegments: 1, tlds: { allow: [ 'com' ] } 
 }),
+password: Joi.string().required(),
+roles : Joi.array().items(Joi.string().valid("admin","user")),
+image: Joi.string(),
+isEmailVerified: Joi.boolean(),
+isActive: Joi.boolean(),
 gender: Joi.string().valid("f", "m", "o"),
 profile: Joi.string(),
 });

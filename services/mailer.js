@@ -5,7 +5,7 @@ const transporter = nodemailer.createTransport({
  port: 465,
  secure: true,
  auth: {
-    user: process.env.SMTP_USERNAME,
+    user: process.env.SMTP_USER,
     pass: process.env.SMTP_PASS,
  },   
 });
@@ -14,7 +14,7 @@ const sendMail = async( {email, subject, htmlMsg} ) => {
     const { messageId } = await transporter.sendMail(
         {
             from: '"Bishal Ghamal" <bishalb019308@nec.edu.np>', // sender address
-            to: [email, "ghamalabhi10@gmail.com"], // list of receivers
+            to: email, // list of receivers
             subject, // Subject line
             html: htmlMsg, // html body
           });
