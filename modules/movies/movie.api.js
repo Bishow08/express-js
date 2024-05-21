@@ -1,4 +1,5 @@
-const { getMovies } = require("./movie.controller");
+const movieController = require("./movie.controller");
+const { validator } = require("./movie.validator");
 
 
 const router = require("express").Router();
@@ -6,8 +7,8 @@ const router = require("express").Router();
 /* All movies API
 List
 Create
-Read only one Movie
-Update
+get one Movie (getById)
+Update release Date (updateReleaseDate)
 Delete
 Update the seats for one movie
 Change the release date of 1 movie
@@ -21,9 +22,10 @@ router.get("/", (req,res,next) => {
     }
 });
 
-router.post("/create", getMovies , (req,res,next) => {
+router.post("/create", async(req,res,next) => {
     try{
-        res.json({msg:"Movie created successfully"});
+        const result = await movieController.create(req.body);
+        res.json({msg:"Movie created successfully", data:result});
     }catch(e){
         next(e);
     }

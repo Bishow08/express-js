@@ -1,17 +1,39 @@
 // model CRUD + LIST (aggregation, pagination)
-const { get } = require("mongoose");
-const { Movie }= require("../movies/movie.model");
+const movieModel = require("./movie.model");
+const slugMake = require("../../utils/slug");
 
-const getMovies = async(req, res, next) => {
-    try{
-        const data = req.body;
-        const newMovie = new Movie(data);
-        await newMovie.save();
-        res.status(201).json({data: newMovie});
-    }catch(e){
-        next(e);
-    }
+// movie create
+const create = async(payload) => {
+        //create slug from title
+        const short = slugMake.slugMake(payload?.title);
+        // check if the slug exists in db
+        const movie = await movieModel.findOne({slug: short});
+        if(movie) throw new Error("Movie already exist");
+        payload.slug = short;
+        // create the movie
+        const result = movieModel.create(payload);
+        return result;
+};
 
-}
+//movie list
+const list = () => {};
 
-module.exports = { getMovies };
+//get one movie 
+const getById = (id) => {
+
+};
+;
+//update release Date
+const updateReleaseDate = (id, payload) => {};
+
+//movie detail update
+const update = (id, payload) => {};
+
+// seats update
+const updateSeats = (id, payload) => {};
+
+// delete movie
+const remove = (id) => {};
+
+
+module.exports = { create, list, getById, updateReleaseDate, update, updateSeats, remove };

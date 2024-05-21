@@ -161,7 +161,7 @@ const forgetPasswordPassChange = async (payload) => {
   );
   if (!updatedUser) throw new Error("Something went wrong");
   return true;
-};y
+};
 
 const list = () => {
 	return userModel.find();

@@ -1,35 +1,50 @@
 // schema
 // validation
 // model
-const mongoose = require("mongoose");
-
-const movieSchema = new mongoose.Schema({
-    email: {
-        type :String,
-        required: true,
-        unique: true,
-    },
+const { Schema, model } = require("mongoose");
+//schema
+const movieSchema = new Schema({
     title: {
         type : String,
         required : true,
-        trim: true  
+        unique: true, 
     },
-    description : {
-        type : String,
-        required : true,
+    slug: {
+     type: String,   
     },
-    genre : {
+    duration: {
+        type: String, 
+        required: true,
+    },
+     synopsis: {
         type : String,
-        required : true,
-        enum : ['Action', 'Adventure', 'Comedy', 'Drama', 'Thriller', 'Animation']
+    },
+    poster:{
+        type : String,
+        required:false,
     },
     releaseDate : {
         type : Date,
-        required : true
-    }
+        required : true,
+        default: Date.now,
+    },
+    endDate:{
+        type : Date,
+        required: true,
+        default: Date.now,
+    },
+    seats:{
+        type : Number,
+        required: true,
+        default: 0,
+    },
+    //TODO (reference)
+    //createdBy: {}
 
-})
+}, 
+{
+    timestamps: true,
+});
 
-const Movie = mongoose.model('Movie', movieSchema);
 
-module.exports = { Movie };
+module.exports = model("Movie", movieSchema);
