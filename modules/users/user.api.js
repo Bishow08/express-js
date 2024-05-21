@@ -33,22 +33,6 @@ const upload = multer({
 });
 
 
-
-
-/*
-Register
-Login
-forget password
-reset password
-change password
-verify token
-change status of user
-delete user
-list users
-update user
-update my profile
-get one user
-*/
 router.post("/register", upload.single("profile"), //req.body, req.file, req.files 
 validator, 
 async(req,res,next) => {
@@ -72,14 +56,12 @@ router.post("/login", async(req,res,next) => {
     try{
         
         const result = await userController.login(req.body)
-        res.json({msg: "User login successfully" });
+        res.json({msg: "User login successfully", data:result});
         
     }catch(e){
         next(e);
     }
 })
-
-
 
 
 router.post("/generate-email-token", async(req,res,next) => {
@@ -93,95 +75,95 @@ router.post("/generate-email-token", async(req,res,next) => {
     }
 });
 
-
-router.post("/:id/forget-password",(req,res,next) => {
+router.post("/verify-email-token", async(req,res,next) => {
     try{
-        const {id} = req.params;
-        res.json({msg: `Forget password through email and username of id ${id}` });
+        
+        const result = await userController.verifyEmailToken(req.body)
+        res.json({msg: "Email successfully sent", data:result});
+        
+    }catch(e){
+        next(e);
+    }
+})
+
+router.put("/profile", secure(), async(req, res, next) => {
+    try{
+        const result = await userController.updateById(req.currentUser, req.body);
+        res.json({msg: "User Profile Updated successfully" , data: result});
+    }catch(e){
+        next(e);
+    }
+    
+})
+
+router.get("/:id",secure(["admin"]), async(req, res, next) => {
+    try{
+        const result = await userController.getById(req.params.id);
+        res.json({msg:"User details generated", data: result});
+    }catch(e){
+        next(e);
+    }
+})
+
+router.delete("/:id", async(req, res, next) => {
+    try{
+    
+    }catch(e){
+        next(e);
+    }
+    
+})
+
+
+router.post("/change-password", secure(["user", "admin"]), async(req, res, next) => {
+    try{
+        const result = await userController.changePassword(req.currentUser, req.body);
+        res.json({msg: "Password change successfully", data: result});
+    }catch(e){
+        next(e);
+    }
+})
+
+router.post("/reset-password", secure(["admin"]), async(req, res, next) => {
+    try{
+        const {id, newPassword} = req.body;
+        if(!id || !newPassword) throw new Error("something went wrong");
+    const result = await userController.resetPassword(id, newPassword);
+    res.json({msg: "Password reset successfully", data: result});
+    }catch(e){
+        next(e);
+    }
+})
+
+router.post("/forget-password-token", async(req, res, next) => {
+    try{
+        const result = await userController.forgetPasswordTokenGen(req.body);
+        res.json({msg:"Foget password token sent successfully", data:result});
+    }catch(e){
+        next(e);
+    }
+})
+
+router.post("/forget-password", async(req, res, next) => {
+    try{
+        const result = await userController.forgetPasswordPassChange(req.body);
+        res.json({msg:"Foget changed successfully", data:result});
+    }catch(e){
+        next(e);
+    }
+})
+
+
+router.get("/", secure(["admin"]), async(req,res,next) => {
+    try{
+        const data = await userController.list();
+        res.json({msg: "list all users", data:data});
     }catch(e){
         next(e);
     }
 });
 
-router.patch("/:id/reset-password",(req,res,next) => {
-    try{
-        const {id} = req.params;
-        res.json({msg: `Password reset successfully of id ${id}`});
-    }catch(e){
-        next(e);
-    }
-});
 
-router.patch("/:id/change-password",(req,res,next) => {
-    try{
-        const {id} = req.params;
-        res.json({msg: `Password updated successfully of id ${id}`});
-    }catch(e){
-        next(e);
-    }
-});
-
-router.post("/:id/verify-token/:token",(req,res,next) => {
-    try{
-        const {id,token} = req.params;
-        res.json({msg: `Token is verified of id ${id} and token ${token}`});
-    }catch(e){
-        next(e);
-    }
-});
-
-router.patch("/:id/status",(req,res,next) => {
-    try{
-        const {id} = req.params;
-        res.json({msg: `User status change of id ${id}`});
-    }catch(e){
-        next(e);
-    }
-});
-
-router.delete("/:id",(req,res,next) => {
-    try{
-        const {id} = req.params;
-        res.json({msg: `User deleted of id ${id}`});
-    }catch(e){
-        next(e);
-    }
-});
-
-router.get("/", secure(["admin"]), (req,res,next) => {
-    try{
-        res.json({msg: "list all users"});
-    }catch(e){
-        next(e);
-    }
-});
-
-router.put("/:id",(req,res,next) => {
-    try{
-        const {id} = req.params;
-        res.json({msg: `User updated successfully of id ${id}`});
-    }catch(e){
-        next(e);
-    }
-});
-
-router.patch("/profile",(req,res,next) => {
-    try{
-        const {id} = req.params;
-        res.json({msg: "User profile updated"});
-    }catch(e){
-        next(e);
-    }
-});
-
-router.get("/:id",(req,res,next) => {
-    try{
-        const {id} = req.params;
-        res.json({msg: `Get one user of id ${id}`});
-    }catch(e){
-        next(e);
-    }
-});
 
 
 

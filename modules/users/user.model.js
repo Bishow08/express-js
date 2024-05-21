@@ -14,7 +14,7 @@ const userSchema = new Schema({
     },
     password : {
         type : String,
-        required : true,
+        required : true, select: false
     },
     roles : 
         {
@@ -26,7 +26,9 @@ const userSchema = new Schema({
     image : {
         type : String
     },
-    otp: {type : String},
+    otp: {
+        type : String  
+    },
     
     isEmailVerified : {
         type : Boolean, required : true, default : false,

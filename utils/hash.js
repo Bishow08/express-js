@@ -4,7 +4,7 @@ const genHash = (payload)=>{
     return Bcrypt.hashSync(payload, Number(process.env.SALT_ROUND));
 }
 
-const compareHash = (hashPayload, Payload)=> {
+const compareHash = (hashPayload, payload)=> {
     return Bcrypt.compareSync(payload, hashPayload);
 };
 
