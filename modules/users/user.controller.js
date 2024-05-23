@@ -163,8 +163,45 @@ const forgetPasswordPassChange = async (payload) => {
   return true;
 };
 
-const list = () => {
-	return userModel.find();
+const list = async({page=1, limit=10}) => {
+	const query = [];
+	query.push(
+		[
+			{
+			  '$facet': {
+				'metadata': [
+				  {
+					'$count': 'total'
+				  }
+				], 
+				'data': [
+				  {
+					'$skip': (+page -1)* +limit, //+ for type conversion
+				  }, {
+					'$limit': +limit,
+				  }
+				]
+			  }
+			}, {
+			  '$addFields': {
+				'total': {
+				  '$arrayElemAt': [
+					'$metadata.total', 0
+				  ]
+				}
+			  }
+			}, {
+			  '$project': {
+				'metadata': 0, 
+				'data.password': 0
+			  }
+			}
+		  ]
+	);
+	const result = await userModel.aggregation(query);
+	return {
+		total: result[0]?.total ||0,
+	}
 };
 
 const updateById = (id, payload) => {

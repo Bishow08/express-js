@@ -21,7 +21,7 @@ const movieSchema = new Schema({
     },
     poster:{
         type : String,
-        required:false,
+        required:true,
     },
     releaseDate : {
         type : Date,
@@ -31,7 +31,6 @@ const movieSchema = new Schema({
     endDate:{
         type : Date,
         required: true,
-        default: Date.now,
     },
     seats:{
         type : Number,

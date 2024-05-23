@@ -157,6 +157,7 @@ router.post("/forget-password", async(req, res, next) => {
 router.get("/", secure(["admin"]), async(req,res,next) => {
     try{
         const data = await userController.list();
+        
         res.json({msg: "list all users", data:data});
     }catch(e){
         next(e);

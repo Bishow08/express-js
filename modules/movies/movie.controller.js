@@ -1,30 +1,35 @@
 // model CRUD + LIST (aggregation, pagination)
 const movieModel = require("./movie.model");
-const slugMake = require("../../utils/slug");
+const {slugger} = require("../../utils/text");
 
 // movie create
 const create = async(payload) => {
-        //create slug from title
-        const short = slugMake.slugMake(payload?.title);
+        //create slug from title (slugify)
+        const slug = slugger(payload?.title);
         // check if the slug exists in db
-        const movie = await movieModel.findOne({slug: short});
-        if(movie) throw new Error("Movie already exist");
-        payload.slug = short;
+        const movie = await movieModel.findOne({slug});
+        if(movie) throw new Error("Movie title is already in use");
         // create the movie
-        const result = movieModel.create(payload);
+        payload.slug = slug;
+        console.log({slug})
+        const result = await movieModel.create(payload);
         return result;
 };
 
 //movie list
-const list = () => {};
+const list = () => {
+        return movieModel.find();
+};
 
 //get one movie 
-const getById = (id) => {
-
+const getBySlug = (slug) => {
+        return movieModel.findOne({ slug });
 };
-;
+
 //update release Date
-const updateReleaseDate = (id, payload) => {};
+const updateReleaseDate = (id, payload) => {
+        
+};
 
 //movie detail update
 const update = (id, payload) => {};
@@ -36,4 +41,4 @@ const updateSeats = (id, payload) => {};
 const remove = (id) => {};
 
 
-module.exports = { create, list, getById, updateReleaseDate, update, updateSeats, remove };
+module.exports = { create, list, getBySlug, updateReleaseDate, update, updateSeats, remove };
